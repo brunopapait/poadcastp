@@ -10,13 +10,15 @@ import { api } from '../services/api';
 import { convertDuractionToTimeString } from '../utils/convertDuractionToTimeString';
 
 import styles from './home.module.scss';
+import { useContext } from 'react';
+import { PlayerContext } from '../contexts/PlayerContext';
 
 interface Episode {
   id: string;
   title: string;
   members: string;
   thumbnail: string,
-  duration: string;
+  duration: number;
   durationAsString: string;
   url: string;
   publishedAt: string;
@@ -28,6 +30,7 @@ interface HomeProps {
 
 export default function Home({ allEpisodes, latestEpisodes }: HomeProps) {
 
+  const { play } = useContext(PlayerContext)
 
   return (
     <div className={styles.homepage}>
@@ -53,7 +56,7 @@ export default function Home({ allEpisodes, latestEpisodes }: HomeProps) {
               </div>
 
               <button type='button'>
-                <img src="/play-green.svg" alt="Tocar episódio" />
+                <img src="/play-green.svg" alt="Tocar episódio" onClick={() => play(item)} />
               </button>
             </li>
           ))}
@@ -93,7 +96,7 @@ export default function Home({ allEpisodes, latestEpisodes }: HomeProps) {
                 <td>{item.publishedAt}</td>
                 <td>{item.durationAsString}</td>
                 <td>
-                  <button type='button'>
+                  <button type='button' onClick={() => play(item)}>
                     <img src="/play-green.svg" alt="Tocar episódio" />
                   </button>
                 </td>
@@ -124,7 +127,7 @@ export const getStaticProps: GetStaticProps = async () => {
       publishedAt: format(parseISO(item.published_at), 'd MMM yy', { locale: ptBR }),
       duration: Number(item.file.duration),
       durationAsString: convertDuractionToTimeString(Number(item.file.duration)),
-      url: item.file.duration,
+      url: item.file.url,
     }
   });
 
